@@ -8,7 +8,6 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Google Sheets setup using env variable for JSON
 const sheets = google.sheets('v4');
 const auth = new google.auth.GoogleAuth({
   credentials: JSON.parse(process.env.GOOGLE_JSON),
@@ -17,7 +16,6 @@ const auth = new google.auth.GoogleAuth({
 
 const spreadsheetId = process.env.SHEET_ID;
 
-// GET all events
 app.get('/api/events', async (req, res) => {
   try {
     const client = await auth.getClient();
@@ -36,11 +34,11 @@ app.get('/api/events', async (req, res) => {
     }));
     res.json(events);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST new event
 app.post('/api/events', async (req, res) => {
   try {
     const client = await auth.getClient();
@@ -56,6 +54,7 @@ app.post('/api/events', async (req, res) => {
     });
     res.json({ message: 'Event added successfully!' });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
