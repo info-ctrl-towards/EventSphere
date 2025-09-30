@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 const sheets = google.sheets('v4');
 const auth = new google.auth.GoogleAuth({
-  credentials: JSON.parse(process.env.GOOGLE_JSON),
+  keyFile: '/etc/secrets/service-account.json', // path to your secret file
   scopes: ['https://www.googleapis.com/auth/spreadsheets']
 });
 
