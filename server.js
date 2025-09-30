@@ -8,10 +8,10 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Google Sheets setup
+// Google Sheets setup using env variable for JSON
 const sheets = google.sheets('v4');
 const auth = new google.auth.GoogleAuth({
-  keyFile: 'service-account.json', // Upload your JSON key here
+  credentials: JSON.parse(process.env.GOOGLE_JSON),
   scopes: ['https://www.googleapis.com/auth/spreadsheets']
 });
 
@@ -24,7 +24,7 @@ app.get('/api/events', async (req, res) => {
     const response = await sheets.spreadsheets.values.get({
       auth: client,
       spreadsheetId,
-      range: 'Sheet1!A2:E' // Sheet name + columns
+      range: 'Sheet1!A2:E'
     });
     const rows = response.data.values || [];
     const events = rows.map(r => ({
@@ -60,9 +60,7 @@ app.post('/api/events', async (req, res) => {
   }
 });
 
-// Simple test route
 app.get('/', (req, res) => res.send('Event Sphere Backend Running'));
 
-// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
