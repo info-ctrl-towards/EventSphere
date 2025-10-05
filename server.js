@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -9,22 +8,22 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+// Google Sheets setup using Render environment variable
 const sheets = google.sheets('v4');
 const auth = new google.auth.GoogleAuth({
   credentials: JSON.parse(process.env.GOOGLE_JSON),
   scopes: ['https://www.googleapis.com/auth/spreadsheets']
 });
-
 const spreadsheetId = process.env.SHEET_ID;
 
-// Get all events
+// GET all events
 app.get('/api/events', async (req, res) => {
   try {
     const client = await auth.getClient();
     const response = await sheets.spreadsheets.values.get({
       auth: client,
       spreadsheetId,
-      range: 'Events!A2:E'
+      range: 'Sheet1!A2:E'
     });
     const rows = response.data.values || [];
     const events = rows.map(r => ({
@@ -40,7 +39,7 @@ app.get('/api/events', async (req, res) => {
   }
 });
 
-// Add event
+// POST new event
 app.post('/api/events', async (req, res) => {
   try {
     const client = await auth.getClient();
@@ -53,36 +52,11 @@ app.post('/api/events', async (req, res) => {
     await sheets.spreadsheets.values.append({
       auth: client,
       spreadsheetId,
-      range: 'Events!A:E',
+      range: 'Sheet1!A:E',
       valueInputOption: 'RAW',
       requestBody: { values: [[title, description, date, venue, organizer]] }
     });
-
-    res.json({ message: "Event added successfully!" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Participant registration
-app.post('/api/register', async (req, res) => {
-  try {
-    const client = await auth.getClient();
-    const { eventTitle, name, regNum, email } = req.body;
-
-    if (!eventTitle || !name || !regNum || !email) {
-      return res.status(400).json({ error: "All fields are required." });
-    }
-
-    await sheets.spreadsheets.values.append({
-      auth: client,
-      spreadsheetId,
-      range: 'Participants!A:D',
-      valueInputOption: 'RAW',
-      requestBody: { values: [[eventTitle, name, regNum, email]] }
-    });
-
-    res.json({ message: "Participant registered successfully!" });
+    res.json({ message: 'Event added successfully!' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
