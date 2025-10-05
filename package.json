@@ -1,16 +1,14 @@
 {
-  "name": "eventsphere",
+  "name": "eventspherebackend",
   "version": "1.0.0",
-  "description": "College Event Management System",
   "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "body-parser": "^1.20.2",
-    "googleapis": "^121.0.0",
+    "googleapis": "^118.0.0",
+    "nodemailer": "^6.9.3",
+    "qrcode": "^1.5.1",
     "dotenv": "^16.3.1"
   }
 }
